@@ -1,0 +1,11 @@
+{
+  "name": "callrail-gads-bypass",
+  "version": "1.0.0",
+  "description": "CallRail to Google Ads conversion sync (bypasses broken native integration)",
+  "scripts": {
+    "build": "echo 'No build required'"
+  },
+  "dependencies": {
+    "googleapis": "^126.0.0"
+  }
+}

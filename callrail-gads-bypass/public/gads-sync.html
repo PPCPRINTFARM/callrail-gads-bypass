@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phoenix Command | Google Ads Sync</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0a0b;
+      --bg-card: #111113;
+      --bg-elevated: #18181b;
+      --border: #27272a;
+      --text-primary: #fafafa;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --phoenix-orange: #f97316;
+      --phoenix-amber: #f59e0b;
+      --phoenix-green: #22c55e;
+      --phoenix-red: #ef4444;
+      --phoenix-blue: #3b82f6;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--phoenix-orange), var(--phoenix-amber));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .stat-value.green { color: var(--phoenix-green); }
+    .stat-value.orange { color: var(--phoenix-orange); }
+    .stat-value.blue { color: var(--phoenix-blue); }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--phoenix-orange);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #ea580c;
+    }
+
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    td {
+      font-size: 0.875rem;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tier-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .tier-very_good { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .tier-good { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .tier-fair { background: rgba(249, 115, 22, 0.2); color: #fb923c; }
+    .tier-poor { background: rgba(161, 161, 170, 0.2); color: #a1a1aa; }
+    .tier-very_poor { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+    .value-input {
+      width: 100px;
+      padding: 0.375rem 0.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+
+    .value-input:focus {
+      outline: none;
+      border-color: var(--phoenix-orange);
+    }
+
+    .sync-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-dot.pending { background: var(--phoenix-amber); }
+    .status-dot.synced { background: var(--phoenix-green); }
+    .status-dot.error { background: var(--phoenix-red); }
+
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .phone {
+      font-family: monospace;
+      color: var(--text-secondary);
+    }
+
+    .gclid {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    .actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: var(--bg-elevated);
+      border-top: 1px solid var(--border);
+    }
+
+    .selected-count {
+      color: var(--text-secondary);
+    }
+
+    .filter-row {
+      padding: 1rem 1.5rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .filter-select {
+      padding: 0.5rem 1rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">🔥</div>
+      <span>Phoenix Command</span>
+      <span style="color: var(--text-muted); font-weight: 400;">/ Google Ads Sync</span>
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="loadConversions()">↻ Refresh</button>
+      <button class="btn btn-primary" onclick="triggerSync()">⚡ Sync to Google Ads</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Pending Sync</div>
+        <div class="stat-value orange" id="stat-pending">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Synced Today</div>
+        <div class="stat-value green" id="stat-synced">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Value</div>
+        <div class="stat-value blue" id="stat-value">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Last Sync</div>
+        <div class="stat-value" id="stat-last" style="font-size: 1rem;">-</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📞 CallRail Conversions with GCLID</div>
+        <div class="sync-status">
+          <span class="status-dot pending"></span>
+          <span id="sync-status-text">Ready to sync</span>
+        </div>
+      </div>
+      
+      <div class="filter-row">
+        <select class="filter-select" id="filter-tier" onchange="filterTable()">
+          <option value="">All Tiers</option>
+          <option value="very_good">Very Good (100%)</option>
+          <option value="good">Good (75%)</option>
+          <option value="fair">Fair (50%)</option>
+          <option value="poor">Poor (25%)</option>
+          <option value="very_poor">Very Poor (0%)</option>
+        </select>
+        <select class="filter-select" id="filter-status" onchange="filterTable()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="synced">Synced</option>
+          <option value="error">Error</option>
+        </select>
+        <select class="filter-select" id="filter-days" onchange="loadConversions()">
+          <option value="1">Last 24 hours</option>
+          <option value="7" selected>Last 7 days</option>
+          <option value="30">Last 30 days</option>
+        </select>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" class="checkbox" onchange="toggleAll(this)"></th>
+              <th>Date</th>
+              <th>Phone</th>
+              <th>Campaign</th>
+              <th>Lead Score</th>
+              <th>Product</th>
+              <th>Value</th>
+              <th>GCLID</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="conversions-table">
+            <tr>
+              <td colspan="9" class="loading">Loading conversions...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="actions-bar">
+        <div class="selected-count"><span id="selected-count">0</span> selected</div>
+        <div class="controls">
+          <button class="btn btn-secondary" onclick="markSelected('exclude')">Exclude Selected</button>
+          <button class="btn btn-primary" onclick="syncSelected()">Sync Selected</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚙️ Value Calculation Settings</div>
+      </div>
+      <div style="padding: 1.5rem;">
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+          Values are calculated based on CallRail's lead score × product price. Adjust multipliers below:
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Very Good (Converted)</label>
+            <input type="number" class="value-input" value="100" style="width: 100%;" data-tier="very_good">%
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Good (Hot Lead)</label>
+            <input type="number" class="value-input" value="75" style="width: 100%;" data-tier="good">%
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Fair (Good Lead)</label>
+            <input type="number" class="value-input" value="50" style="width: 100%;" data-tier="fair">%
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Poor (OK Lead)</label>
+            <input type="number" class="value-input" value="25" style="width: 100%;" data-tier="poor">%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration - update with your Netlify function URL
+    const API_BASE = '/.netlify/functions';
+    
+    let conversions = [];
+    let selectedIds = new Set();
+
+    // Load conversions on page load
+    document.addEventListener('DOMContentLoaded', loadConversions);
+
+    async function loadConversions() {
+      const days = document.getElementById('filter-days').value;
+      const hours = days * 24;
+      
+      try {
+        const response = await fetch(`${API_BASE}/sync-gads-conversions?hours=${hours}&dry_run=true`);
+        const data = await response.json();
+        
+        if (data.success) {
+          conversions = data.conversions || [];
+          renderTable();
+          updateStats(data.stats);
+        } else {
+          console.error('API error:', data.error);
+        }
+      } catch (error) {
+        console.error('Failed to load:', error);
+        document.getElementById('conversions-table').innerHTML = 
+          `<tr><td colspan="9" class="loading" style="color: var(--phoenix-red);">Failed to load: ${error.message}</td></tr>`;
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('conversions-table');
+      const tierFilter = document.getElementById('filter-tier').value;
+      const statusFilter = document.getElementById('filter-status').value;
+
+      const filtered = conversions.filter(c => {
+        if (tierFilter && c.tier !== tierFilter) return false;
+        // Add status filter logic if you have status data
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="loading">No conversions found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((c, i) => `
+        <tr data-id="${i}">
+          <td><input type="checkbox" class="checkbox" onchange="updateSelection(${i}, this.checked)" ${selectedIds.has(i) ? 'checked' : ''}></td>
+          <td>${formatDate(c.conversionTime || new Date())}</td>
+          <td class="phone">${c.phone || 'N/A'}</td>
+          <td>${c.campaign || 'Direct'}</td>
+          <td><span class="tier-badge tier-${c.tier}">${formatTier(c.tier)}</span></td>
+          <td>${c.product || 'Unknown'}</td>
+          <td>
+            <input type="number" class="value-input" value="${c.value}" onchange="updateValue(${i}, this.value)">
+          </td>
+          <td class="gclid" title="${c.gclid}">${c.gclid ? c.gclid.substring(0, 15) + '...' : 'N/A'}</td>
+          <td><span class="status-dot pending"></span> Pending</td>
+        </tr>
+      `).join('');
+    }
+
+    function updateStats(stats) {
+      document.getElementById('stat-pending').textContent = stats.withValue || 0;
+      document.getElementById('stat-synced').textContent = stats.rowsWritten || 0;
+      document.getElementById('stat-value').textContent = '$' + (parseFloat(stats.totalValue) || 0).toLocaleString();
+      document.getElementById('stat-last').textContent = 'Just now';
+    }
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
+
+    function formatTier(tier) {
+      const labels = {
+        'very_good': 'Converted (100%)',
+        'good': 'Hot (75%)',
+        'fair': 'Good (50%)',
+        'poor': 'OK (25%)',
+        'very_poor': 'Not Good (0%)'
+      };
+      return labels[tier] || tier;
+    }
+
+    function updateSelection(id, checked) {
+      if (checked) {
+        selectedIds.add(id);
+      } else {
+        selectedIds.delete(id);
+      }
+      document.getElementById('selected-count').textContent = selectedIds.size;
+    }
+
+    function toggleAll(checkbox) {
+      const checkboxes = document.querySelectorAll('tbody .checkbox');
+      checkboxes.forEach((cb, i) => {
+        cb.checked = checkbox.checked;
+        updateSelection(i, checkbox.checked);
+      });
+    }
+
+    function updateValue(id, value) {
+      conversions[id].value = parseFloat(value) || 0;
+    }
+
+    function filterTable() {
+      renderTable();
+    }
+
+    async function triggerSync() {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = '⏳ Syncing...';
+      
+      try {
+        const days = document.getElementById('filter-days').value;
+        const response = await fetch(`${API_BASE}/sync-gads-conversions?hours=${days * 24}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(`✅ Synced ${data.stats.rowsWritten} conversions to Google Sheets!`);
+          loadConversions();
+        } else {
+          alert('❌ Sync failed: ' + data.error);
+        }
+      } catch (error) {
+        alert('❌ Sync failed: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '⚡ Sync to Google Ads';
+      }
+    }
+
+    function syncSelected() {
+      if (selectedIds.size === 0) {
+        alert('No conversions selected');
+        return;
+      }
+      // Implement selective sync
+      alert(`Would sync ${selectedIds.size} selected conversions`);
+    }
+
+    function markSelected(action) {
+      if (selectedIds.size === 0) {
+        alert('No conversions selected');
+        return;
+      }
+      alert(`Would ${action} ${selectedIds.size} selected conversions`);
+    }
+  </script>
+</body>
+</html>
