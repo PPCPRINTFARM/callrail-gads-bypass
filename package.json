@@ -1,0 +1,8 @@
+{
+  "name": "callrail-gads-bypass",
+  "version": "2.0.0",
+  "description": "CallRail to Google Ads CSV export - manual upload bypass",
+  "scripts": {
+    "build": "echo 'No build required'"
+  }
+}
