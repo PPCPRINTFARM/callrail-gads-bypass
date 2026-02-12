@@ -128,7 +128,7 @@ exports.handler = async (event) => {
 
         conversions.push({
           gclid,
-          conversionName: 'CallRail Phone Lead',
+          conversionName: 'CallRail Phone',
           conversionTime: formatGoogleAdsTime(call.start_time),
           conversionValue: perCallValue,
           currency: 'USD',
